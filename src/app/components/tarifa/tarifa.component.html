@@ -1,0 +1,54 @@
+<ul *ngFor="let tarifa of tarifas; let i = index">
+  <label>{{tarifa.nombre}}</label>
+  <div class="row">
+    <div class="col-lg-3">
+      <div class="input-group">
+        <span class="input-group-addon">Banderazo</span>
+        <span class="input-group-addon">$</span>
+        <input type="number" step="any" class="form-control" [(ngModel)]="tarifa.banderazo" (change)="changedInput[i] = true">
+      </div>
+    </div>
+    <div class="col-lg-3">
+      <div class="input-group">
+        <span class="input-group-addon">Kilometro</span>
+        <span class="input-group-addon">$</span>
+        <input type="number" step="any" class="form-control" [(ngModel)]="tarifa.kilometro" (change)="changedInput[i] = true">
+      </div>
+    </div>
+    <div class="col-lg-3">
+      <div class="input-group">
+        <span class="input-group-addon">Minuto</span>
+        <span class="input-group-addon">$</span>
+        <input type="number" step="any" class="form-control" [(ngModel)]="tarifa.minuto" (change)="changedInput[i] = true">
+      </div>
+    </div>
+    <div class="col-lg-3">
+      <button type="button" class="btn btn-primary" [disabled]="!changedInput[i]" (click)="tarifaClicked = [tarifa.nombre, tarifa.banderazo, tarifa.kilometro, tarifa.minuto, i]" data-toggle="modal" data-target="#myModalConfirmation">Guardar cambios</button>
+    </div>
+  </div>
+  <div style="padding: 10px"></div>
+</ul>
+
+
+<!-- Modal confirmation-->
+<div class="modal fade" id="myModalConfirmation" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog " role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <div class="row">
+          <div class="col-lg-3">
+            <i class="fa fa-exclamation-circle fa-5x" aria-hidden="true"></i>
+          </div>
+          <div class="col-xl-1">
+            <h3 class="modal-title" id="myModalLabel">¿Estás seguro de guardar los cambios?</h3>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" (click)="onCancel(tarifaClicked[0]); changedInput[tarifaClicked[4]] = false">Cancelar</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="saveChanges(tarifaClicked); changedInput[tarifaClicked[4]] = false">Guardar cambios</button>
+      </div>
+    </div>
+  </div>
+</div>

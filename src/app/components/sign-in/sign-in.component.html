@@ -1,0 +1,66 @@
+<div class="site-wrapper">
+  <div class="site-wrapper-inner">
+    <div class="cover-container">
+      <div class="masthead clearfix">
+        <div class="inner">
+          <h3 class="masthead-brand"><img src="../../../assets/Logo_IterAdmin.png" height="50" width="180"></h3>
+        </div>
+      </div>
+      <div class="inner-cover">
+        <h3 >La plataforma para manejar tu negocio sobre ruedas.</h3>
+        <div style="padding: 70px"></div>
+        <button id="modalButton" class="btn btn-lg btn-block" data-toggle="modal" data-target="#modalSignIn" data-backdrop="false">Da click para iniciar sesión!</button>
+      </div>
+      <div class="mastfoot">
+        <div class="inner">
+          <p>Iter Admin app, by <a href="http://nieu.mx">Nieu Technologies</a>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal sign in-->
+<div class="modal fade" id="modalSignIn" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h3 class="modal-title">Iniciar sesión</h3>
+      </div>
+      <form class="form-signin" #signInForm="ngForm" (ngSubmit)="signIn()">
+        <div class="modal-body">
+          <div class="form-group">
+            <h4 for="username">Usuario o Correo Electrónico</h4>
+            <input type="text" class="form-control input-lg" required autofocus
+            [(ngModel)]="modelSignIn.username"
+            name="username" #username="ngModel">
+            <div [hidden]="username.valid || username.pristine" class="alert alert-danger">
+              Usuario/Correo electrónico obligatorio
+            </div>
+          </div>
+          <div class="form-group">
+            <h4 for="password">Contraseña</h4>
+            <input type="password" class="form-control input-lg" required
+            [(ngModel)]="modelSignIn.password"
+            name="password" #password="ngModel">
+            <div [hidden]="password.valid || password.pristine" class="alert alert-danger">
+              Contraseña obligatoria
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-lg btn-block" type="submit" [disabled]="!signInForm.form.valid">
+            <span *ngIf="!loading">Ingresar</span>
+            <div *ngIf="loading" class="loading">
+              <div class="loading-bar"></div>
+              <div class="loading-bar"></div>
+              <div class="loading-bar"></div>
+              <div class="loading-bar"></div>
+            </div>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

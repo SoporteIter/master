@@ -1,0 +1,36 @@
+<nav *ngIf="onSession" class="top-bar">
+
+  <a class="brand" href="#">{{title}}</a>
+
+  <ul class="left">
+    <li class="dropdown">
+      <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{_router.url | route}}<span class="caret"></span></a>
+      <ul class="dropdown-menu">
+        <li *ngIf="userType == 0" routerLinkActive="active"><a [routerLink]="['/resumen']">Resumen</a></li>
+        <!-- <li *ngIf="userType == 0"><a >Ingresos</a></li> -->
+        <li *ngIf="userType == 0" routerLinkActive="active"><a [routerLink]="['/tarifa']">Tarifa</a></li>
+        <!-- <li *ngIf="userType == 0"><a >Codigos promociones</a></li> -->
+        <!-- <li *ngIf="userType == 0"><a >Facturación</a></li> -->
+        <li *ngIf="userType == 3" routerLinkActive="active"><a [routerLink]="['/viajes']">Viajes</a></li>
+        <!-- <li *ngIf="userType == 3"><a >Historial de viajes</a></li> -->
+        <li *ngIf="userType == 0" role="separator" class="divider"></li>
+        <li *ngIf="userType == 0" routerLinkActive="active"><a [routerLink]="['/monitoreo']">Monitoreo de activos</a></li>
+        <li *ngIf="userType == 0" routerLinkActive="active"><a [routerLink]="['/activos']">Activos</a></li>
+      </ul>
+    </li>
+  </ul>
+  <a class="nieu" target="_blank" href="http://nieu.mx">Nieu</a>
+  <ul class="right">
+    <li class="dropdown">
+      <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{user}}<span class="caret"></span></a>
+      <ul class="dropdown-menu">
+        <li><a style="cursor: pointer" (click)="signOut()">Cerrar sesión</a></li>
+      </ul>
+    </li>
+  </ul>
+
+</nav>
+
+<div class="router">
+  <router-outlet></router-outlet>
+</div>

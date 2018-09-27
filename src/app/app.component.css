@@ -1,0 +1,72 @@
+.top-bar {
+  box-shadow: 5px 5px 5px #888888;
+  height: 5%;
+  width: 100%;
+  background-color: black;
+  z-index: 20;
+  position: relative;
+}
+
+.brand {
+  font-size: 20px;
+  color: grey;
+  position: absolute;
+  bottom: 25%;
+  left: 2%;
+}
+
+.brand:hover {
+  color: white;
+  text-decoration: none;
+}
+
+.left {
+  font-size: 17px;
+  color: grey;
+  margin: 0;
+  position: absolute;
+  bottom: 25%;
+  left: 8%;
+}
+
+.right {
+  float: right;
+  font-size: 17px;
+  color: grey;
+  margin: 0;
+  position: absolute;
+  bottom: 25%;
+  right: 6%;
+}
+
+.nieu {
+  float: right;
+  font-size: 17px;
+  color: grey;
+  position: absolute;
+  bottom: 25%;
+  right: 2%;
+}
+
+.nieu:hover {
+  color: white;
+  text-decoration: none;
+}
+
+.dropdown-toggle {
+  color: grey;
+}
+
+.dropdown-toggle:hover {
+  color: white;
+  text-decoration: none;
+}
+
+.dropdown {
+  list-style-type: none;
+}
+
+.router {
+  height: 95%;
+  width: 100%;
+}

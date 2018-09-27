@@ -1,0 +1,74 @@
+<div class="content">
+  <div class="header">
+    <h3>Viajes en espera</h3>
+    <h4 *ngIf="_parseService.isLoggedIn().id == 'C0t3MRgh9E'">Filtrar por:</h4>
+    <ul class="nav nav-pills" *ngIf="_parseService.isLoggedIn().id == 'C0t3MRgh9E'">
+      <li role="presentation" [class.active]="requestedFrom === 3" (click)="requestedFrom = 3; createTripsData();"><a>Todos</a></li>
+      <li role="presentation" [class.active]="requestedFrom === 0" (click)="requestedFrom = 0; createTripsData();"><a>Call Center</a></li>
+    </ul>
+    <ul class="nav nav-pills bottom-nav" *ngIf="_parseService.isLoggedIn().id == 'C0t3MRgh9E'">
+      <li role="presentation" [class.active]="requestedFrom === 2" (click)="requestedFrom = 2; createTripsData();"><a>Android</a></li>
+      <li role="presentation" [class.active]="requestedFrom === 1" (click)="requestedFrom = 1; createTripsData();"><a>IOS</a></li>
+    </ul>
+  </div>
+  <div class="body">
+    <ul class="list-group">
+      <div class="trip-container" *ngFor="let viaje of viajes" style="cursor: pointer;" [innerHTML]="viaje | tripInfoStatus" data-toggle="modal" data-target="#modalTrip" (click)="showDetails(viaje)"></div>
+    </ul>
+  </div>
+</div>
+
+<!-- Modal Viaje-->
+<div class="modal fade" id="modalTrip" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h3 class="modal-title">Viaje</h3>
+      </div>
+      <div class="modal-body">
+        <sebm-google-map
+        [latitude]="markers[0].lat"
+        [longitude]="markers[0].lng"
+        [zoom]="17"
+        [usePanning]="true"
+        [zoomControl]="true">
+        <sebm-google-map-marker
+        *ngFor="let marker of markers;"
+        [latitude]="marker.lat"
+        [longitude]="marker.lng"
+        [iconUrl]="marker.url"
+        [markerDraggable]="marker.draggable">
+      </sebm-google-map-marker>
+    </sebm-google-map>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-lg btn-danger" data-toggle="modal" data-target="#modalConfirmation">Cancelar viaje</button>
+    <button type="button" class="btn btn-default btn-lg" data-dismiss="modal">Cerrar</button>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- Modal confirmation-->
+<div class="modal fade" id="modalConfirmation" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <div class="row">
+          <div class="col-lg-3">
+            <i class="fa fa-exclamation-circle fa-5x" aria-hidden="true"></i>
+          </div>
+          <div class="col-xl-1">
+            <h3 class="modal-title">¿Estás seguro de cancelar el viaje?</h3>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="cancelTrip()">Sí</button>
+      </div>
+    </div>
+  </div>
+</div>

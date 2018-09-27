@@ -1,0 +1,87 @@
+.row {
+  margin-left: 10px;
+  margin-bottom: 10px;
+}
+
+#filterButton {
+  /*float: right;*/
+  box-shadow: 5px 5px 5px #888888;
+}
+
+#filterLabel {
+  font-size: 20px;
+  /*float: right;*/
+}
+
+.mapContainer {
+  box-shadow: 5px 5px 5px #888888;
+}
+
+.sebm-google-map-container {
+  height: 800px;
+  box-shadow: 5px 5px 5px #888888;
+}
+
+/*#filterButtonContainer,
+#filterLabel {
+  text-align: center;
+  margin: auto;
+}*/
+
+/*#filterButton {
+  position:absolute;
+  top: 15%;
+  left: 46%;
+}
+
+#filterLabel {
+  font-size: 20px;
+  position:absolute;
+  top: 15%;
+  left: 20%;
+}*/
+
+.modal.left .modal-dialog {
+		position: fixed;
+		margin: auto;
+		width: 240px;
+		height: 100%;
+		-webkit-transform: translate3d(0%, 0, 0);
+		    -ms-transform: translate3d(0%, 0, 0);
+		     -o-transform: translate3d(0%, 0, 0);
+		        transform: translate3d(0%, 0, 0);
+	}
+
+	.modal.left .modal-content {
+    margin-top: 20%;
+		height: 90%;
+		overflow-y: auto;
+	}
+
+	.modal.left .modal-body {
+		padding: 15px 15px 80px;
+	}
+
+/*Left*/
+	.modal.left.fade .modal-dialog{
+		left: -320px;
+		-webkit-transition: opacity 0.3s linear, left 0.3s ease-out;
+		   -moz-transition: opacity 0.3s linear, left 0.3s ease-out;
+		     -o-transition: opacity 0.3s linear, left 0.3s ease-out;
+		        transition: opacity 0.3s linear, left 0.3s ease-out;
+	}
+
+	.modal.left.fade.in .modal-dialog{
+		left: 0;
+	}
+
+/* ----- MODAL STYLE ----- */
+	.modal-content {
+		border-radius: 0;
+		border: none;
+	}
+
+	.modal-header {
+		border-bottom-color: #EEEEEE;
+		background-color: #FAFAFA;
+	}

@@ -1,0 +1,100 @@
+<div class="row">
+  <label id="filterLabel">Visibles <span class="label label-default label-pill pull-xs-right">{{markers.length}}</span>
+    / <span class="label label-default label-pill pull-xs-right">{{onlineDrivers}}</span> Conectados</label>
+    <button id="filterButton" class="btn btn-md btn-primary" data-toggle="modal" data-target="#myModalFilter" data-backdrop="false">Filtrar</button>
+  </div>
+
+  <!-- this creates a google map on the page with the given lat/lng from the component as the initial center of the map: -->
+  <div class="mapContainer">
+    <sebm-google-map
+    [latitude]="lat"
+    [longitude]="lng"
+    [zoom]="zoom"
+    [disableDefaultUI]="false">
+    <sebm-google-map-marker
+    *ngFor="let marker of markers"
+    [latitude]="marker.lat"
+    [longitude]="marker.lng"
+    [iconUrl]="marker.url">
+    <sebm-google-map-info-window [disableAutoPan]="true">
+      <dt>Chofer</dt>
+      <ul style="list-style-type:circle">
+        <li>Nombre: {{marker.nombre}} {{marker.apellidos}}</li>
+        <li>Telefono: {{marker.telefono}}</li>
+      </ul>
+      <dt>Vehiculo</dt>
+      <ul style="list-style-type:circle">
+        <li>Tipo: {{marker.tipo}}</li>
+        <li>Modelo: {{marker.modelo}}</li>
+        <li>Placa: {{marker.placa}}</li>
+        <li>Color: {{marker.color}}</li>
+        <li>Flota: {{marker.flota}}</li>
+      </ul>
+    </sebm-google-map-info-window>
+  </sebm-google-map-marker>
+</sebm-google-map>
+</div>
+
+<!-- <div id="filterButtonContainer">
+<button id="filterButton" class="btn btn-md btn-primary" data-toggle="modal" data-target="#myModalFilter" data-backdrop="false">Filtrar</button>
+<label id="filterLabel">Visibles <span class="label label-default label-pill pull-xs-right">{{markers.length}}</span>
+/
+<span class="label label-default label-pill pull-xs-right">{{onlineDrivers}}</span> Conectados</label>
+</div> -->
+
+<!-- Modal Filter-->
+<div class="modal left fade" id="myModalFilter"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Filtrar por:</h4>
+      </div>
+      <div class="modal-body">
+
+        <li role="separator" class="divider">Por estado:</li>
+        <div class="checkbox">
+          <label><input type="checkbox" value="">En linea</label>
+        </div>
+        <div class="checkbox">
+          <label><input type="checkbox" value="">En viaje</label>
+        </div>
+        <div class="checkbox">
+          <label><input type="checkbox" value="">Desconectado (Ultima ubicación)</label>
+        </div>
+
+        <li role="separator" class="divider">Por ciudad:</li>
+        <div class="checkbox">
+          <label><input type="checkbox" value="">Toluca</label>
+        </div>
+        <div class="checkbox">
+          <label><input type="checkbox" value="">Ciudad de México</label>
+        </div>
+        <div class="checkbox">
+          <label><input type="checkbox" value="">Monterrey</label>
+        </div>
+
+        <li role="separator" class="divider">Por Empresa:</li>
+        <div class="checkbox">
+          <label><input type="checkbox" value="">Mexicana Ejecutiva De Transporte Terrestre</label>
+        </div>
+        <div class="checkbox">
+          <label><input type="checkbox" value="">Rent Car Golden Star</label>
+        </div>
+        <div class="checkbox">
+          <label><input type="checkbox" value="">Radio Taxis Seven Stars</label>
+        </div>
+        <div class="checkbox">
+          <label><input type="checkbox" value="">Administradora De Transportistas Y Sitios Del Estado De México</label>
+        </div>
+        <div class="checkbox">
+          <label><input type="checkbox" value="">Iter Net Red De Transporte</label>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

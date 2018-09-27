@@ -1,0 +1,367 @@
+<div class="row main-viajes">
+
+  <div class="col-md-2 sidebar-left">
+    <app-monitoreo-viajes></app-monitoreo-viajes>
+  </div>
+
+  <div class="col-md-10 sidebar-right">
+    <div id="searchContainer">
+      <div class="input-group">
+        <span id="inputSearchText" class="input-group-addon">BUSCAR:</span>
+        <input id="inputSearchInput" (keyup)="onQuickFilterChanged($event)" type="text" class="form-control" placeholder="Introducir número telefónico o nombre">
+        <button id="clearBtn" type="button" class="close" (click)="clearInput('userSearch')">X</button>
+      </div>
+      <div class="row" style="margin-top: 5px;">
+        <div class="col-md-10">
+          <ag-grid-ng2 id="agGrid" class="ag-fresh"
+          [gridOptions]="gridOptions"
+          [columnDefs]="columnDefs"
+          [rowData]="rowData"
+          [headerHeight]="0"
+
+          enableColResize
+          enableSorting
+          enableFilter
+          rowSelection="single"
+
+          (modelUpdated)="onModelUpdated()"
+          (rowClicked)="onRowClicked($event)">
+        </ag-grid-ng2>
+      </div>
+      <div class="col-md-2">
+        <button id="createNewButton" type="button btn-block" (click)="userForm(0)">Crear Nuevo Usuario</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- <ul id="mercado-options" class="nav nav-pills nav-justified">
+    <li role="presentation" *ngFor="let mercado of mercados;" [class.active]="mercadoSelected == mercado.nombre" (click)="selectMercado(mercado)"><a>{{mercado.nombre}}</a></li>
+  </ul> -->
+
+  <div id="directionsContainer">
+    <div class="row">
+      <div class="col-md-6">
+        <div style="box-shadow: 5px 5px 5px #888888;" class="input-group">
+          <span class="input-group-addon"><i class="fa fa-map-marker fa-2x" aria-hidden="true"></i></span>
+          <input id="directionsOrigin" (keyup)="directionsOriginChanged($event)" type="text" class="form-control" placeholder="Origen">
+          <button id="clearBtn" type="button" class="close" (click)="clearInput('originSearch')">X</button>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div style="box-shadow: 5px 5px 5px #888888;" class="input-group">
+          <span class="input-group-addon"><i class="fa fa-flag-checkered fa-2x" aria-hidden="true"></i></span>
+          <input id="directionsDestination" (keyup)="directionsDestinationChanged($event)" type="text" class="form-control" placeholder="Destino">
+          <button id="clearBtn" type="button" class="close" (click)="clearInput('destinationSearch')">X</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="mapContainer">
+
+    <div id="optionsContainer" class="row">
+      <div class="col-md-4">
+        <div class="dropdown">
+          <span>SERVICIO:</span>
+          <span id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            {{servicioSelected}}
+            <span class="caret"></span>
+          </span>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+            <li><a style="cursor: pointer" *ngFor="let servicio of servicios;" (click)="onSelectedServicio(servicio.nombre)">{{servicio.nombre}}</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="dropdown">
+          <span>PAGO:</span>
+          <span id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            EFECTIVO
+            <span class="caret"></span>
+          </span>
+          <!-- TODO: Agregar tipos de pago -->
+          <!-- <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+          <li><a href="#">Efectivo</a></li>
+          <li><a href="#">Tarjeta</a></li>
+        </ul> -->
+      </div>
+    </div>
+    <div class="col-md-4">
+      <span>TIEMPO VIAJE: <span id="optionsTime">{{tiempoViaje}}</span></span>
+    </div>
+  </div>
+
+
+  <div class="input-group" id="offlineDrivers">
+    <span class="input-group-addon">
+      <input type="checkbox" [(ngModel)]="driversFilter.offline" [value]="true" (click)="getDrivers()">
+    </span>
+    <span class="input-group-btn">
+      <button class="btn btn-lg" type="button" data-toggle="modal" data-target="#modalDrivers" (click)="asignacionStatusSelected = 0"><span class="label label-default label-pill pull-xs-right">{{offlineDrivers.length}}</span> Desconectados</button>
+    </span>
+  </div>
+  <div class="input-group" id="onlineDrivers">
+    <span class="input-group-addon">
+      <input type="checkbox" [(ngModel)]="driversFilter.online" [value]="true" (click)="getDrivers()">
+    </span>
+    <span class="input-group-btn">
+      <button class="btn btn-lg" type="button" data-toggle="modal" data-target="#modalDrivers" (click)="asignacionStatusSelected = 1"><span class="label label-default label-pill pull-xs-right">{{onlineDrivers.length}}</span> Disponibles</button>
+    </span>
+  </div>
+  <div class="input-group" id="ontripDrivers">
+    <span class="input-group-addon">
+      <input type="checkbox" [(ngModel)]="driversFilter.ontrip" [value]="true" (click)="getDrivers()">
+    </span>
+    <span class="input-group-btn">
+      <button class="btn btn-lg btn-success" type="button" data-toggle="modal" data-target="#modalDrivers" (click)="asignacionStatusSelected = 2"><span class="label label-default label-pill pull-xs-right">{{ontripDrivers.length}}</span> En viaje</button>
+    </span>
+  </div>
+
+  <!-- this creates a google map on the page with the given lat/lng from the component as the initial center of the map: -->
+  <sebm-google-map
+  [latitude]="lat"
+  [longitude]="lng"
+  [zoom]="zoom"
+  [usePanning]="true"
+  [zoomControl]="true"
+  (mapClick)="mapClicked($event)">
+  <sebm-google-map-marker
+  *ngFor="let marker of markers; let i = index"
+  [latitude]="marker.lat"
+  [longitude]="marker.lng"
+  [iconUrl]="marker.url"
+  (markerClick)="clickedMarker(marker, i)"
+  [markerDraggable]="marker.draggable"
+  (dragEnd)="markerDragEnd(marker, i, $event)">
+</sebm-google-map-marker>
+
+<sebm-google-map-marker
+*ngFor="let driver of drivers"
+[latitude]="driver.lastLocation.latitude"
+[longitude]="driver.lastLocation.longitude"
+[iconUrl]="driverIconColor(driver.status, driver.objectId)"
+[markerDraggable]="false">
+<sebm-google-map-info-window [disableAutoPan]="true">
+  <i class="fa fa-taxi" aria-hidden="true"></i> {{driver.chofer.nombre}} {{driver.chofer.apellidos}}
+  <ul>
+    <li><i class="fa fa-phone" aria-hidden="true"></i> {{driver.chofer.telCelular}}</li>
+    <li>{{driver.vehiculo.marca}}</li>
+    <li>{{driver.vehiculo.modelo}}</li>
+    <li>{{driver.vehiculo.color}}</li>
+    <li>{{driver.vehiculo.placas}}</li>
+  </ul>
+</sebm-google-map-info-window>
+</sebm-google-map-marker>
+
+<sebm-google-map-marker
+*ngFor="let requestWithNoDriver of requestsWithNoDriver"
+[latitude]="requestWithNoDriver.originLatitude"
+[longitude]="requestWithNoDriver.originLongitude"
+[iconUrl]="requestWithNoDriver.iconUrl"
+[markerDraggable]="false">
+<sebm-google-map-info-window [disableAutoPan]="true">
+  <i class="fa fa-male" aria-hidden="true"></i> {{requestWithNoDriver.userName}}
+  <ul>
+    <li><i class="fa fa-phone" aria-hidden="true"></i> {{requestWithNoDriver.userPhone}}</li>
+    <li>Origen: {{requestWithNoDriver.userOriginPlace}}</li>
+    <li>Destino: {{requestWithNoDriver.userDestinationPlace}}</li>
+  </ul>
+</sebm-google-map-info-window>
+</sebm-google-map-marker>
+
+</sebm-google-map>
+
+<button id="cancelButton" *ngIf="tripRequested" type="button" (click)="cancelTrip()">CANCELAR VIAJE</button>
+
+<div id="requestContainer" class="row">
+  <div class="col-md-4">
+    <span>Tarifa Estimada</span><br/>
+    <div id="requestTarifaNumber"><span>MXN <strong>${{tarifaEstimada | number:'.0-0'}}</strong></span></div>
+  </div>
+  <div class="col-md-4">
+    <button id="requestButton" type="button" [disabled]="loading || tripAsigned" (click)="requestCloser()">
+      <span *ngIf="!loading">CONFIRMAR VIAJE</span>
+      <div *ngIf="loading" class="loading">
+        <div class="loading-bar"></div>
+        <div class="loading-bar"></div>
+        <div class="loading-bar"></div>
+        <div class="loading-bar"></div>
+      </div>
+    </button>
+  </div>
+  <div class="col-md-4">
+    <span>Ingresa Código</span><br/>
+    <div id="requestCodeNumber"><span>XXXXXX</span></div>
+  </div>
+</div>
+</div>
+
+<div style="height: 50px;"></div>
+
+<div *ngIf="tripAsigned" id="summaryContainer" class="panel">
+  <div class="panel-heading">
+    <h2 class="panel-title">VIAJE CONFIRMADO POR:</h2>
+  </div>
+  <div class="panel-body">
+    <p>
+      Tiempo estimado de llegada por el usuario: <strong id="panelInfo">{{tiempoLlegada}}</strong><br>
+      Pasajero: <strong id="panelInfo">{{selectedPasajero.nombre}} {{selectedPasajero.apellidos}}</strong><br>
+      Chofer: <strong id="panelInfo">{{viaje.asignacion.chofer.nombre}} {{viaje.asignacion.chofer.apellidos}}</strong><br>
+      Telefono celular: <strong id="panelInfo">{{viaje.asignacion.chofer.telCelular}}</strong><br>
+      Marca del vehiculo: <strong id="panelInfo">{{viaje.asignacion.vehiculo.marca}}</strong><br>
+      Modelo del vehiculo: <strong id="panelInfo">{{viaje.asignacion.vehiculo.modelo}}</strong><br>
+      Color del vehiculo: <strong id="panelInfo">{{viaje.asignacion.vehiculo.color}}</strong><br>
+      Placas del vehiculo: <strong id="panelInfo">{{viaje.asignacion.vehiculo.placa}}</strong>
+    </p>
+  </div>
+  <div class="panel-footer">
+    <span class="pull-right"><button type="button" id="finalizeButton" (click)="finalize()">OK</button></span>
+    <div class="clearfix"></div>
+  </div>
+</div>
+
+<div *ngIf="tripAsigned" style="height: 20px;"></div>
+
+</div>
+</div>
+
+<!-- Modal Create New User-->
+<div *ngIf="activeUser" class="modal fade" id="modalUser" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h3 *ngIf="userOption == 0" class="modal-title">Crear Nuevo Usuario</h3>
+        <h3 *ngIf="userOption == 1" class="modal-title">Editar Usuario</h3>
+      </div>
+      <form class="form-user" #userForm="ngForm" (ngSubmit)="saveUser()">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="firstName">Nombre</label>
+            <input type="text" class="form-control" required autofocus
+            [(ngModel)]="modelUser.firstName"
+            name="firstName" #firstName="ngModel">
+            <div [hidden]="firstName.valid || firstName.pristine" class="alert alert-danger">
+              Nombre obligatorio
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="lastName">Apellidos</label>
+            <input type="text" class="form-control" required
+            [(ngModel)]="modelUser.lastName"
+            name="lastName" #lastName="ngModel">
+            <div [hidden]="lastName.valid || lastName.pristine" class="alert alert-danger">
+              Apellidos obligatorios
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="phoneNumber">Numero celular</label>
+            <input type="text" class="form-control" minlength="10" maxlength="10" required
+            [(ngModel)]="modelUser.phoneNumber"
+            name="phoneNumber" #phoneNumber="ngModel">
+            <div [hidden]="phoneNumber.valid || phoneNumber.pristine" class="alert alert-danger">
+              Numero celular obligatorio y debe ser de 10 digitos
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" class="form-control"
+            [(ngModel)]="modelUser.email"
+            name="email" [style.border-left]="validateEmail(modelUser.email)">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="cancelarButton" type="button" data-dismiss="modal">Cancelar</button>
+          <button id="clearButton" (click)="clearModalInputs()">Limpiar Formulario</button>
+          <button id="submitButtonModal" type="submit" [disabled]="!userForm.form.valid">
+            <span *ngIf="!userLoading">Guardar Usuario</span>
+            <div *ngIf="userLoading" class="loading">
+              <div class="loading-bar"></div>
+              <div class="loading-bar"></div>
+              <div class="loading-bar"></div>
+              <div class="loading-bar"></div>
+            </div>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Asignacion-->
+<div class="modal fade" id="modalDrivers" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" [ngSwitch]="asignacionStatusSelected">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h3 class="modal-title" *ngSwitchCase="1">Disponibles</h3>
+        <h3 class="modal-title" *ngSwitchCase="2">En viaje</h3>
+        <h3 class="modal-title" *ngSwitchCase="0">Desconectados</h3>
+      </div>
+      <div class="modal-body">
+        <div class="list-group" *ngSwitchCase="1">
+          <li *ngFor="let onlineDriver of onlineDrivers" class="list-group-item list-group-item-default">
+            <i class="fa fa-taxi" aria-hidden="true"></i> {{onlineDriver.chofer.nombre}} {{onlineDriver.chofer.apellidos}}
+            <ul>
+              <li><i class="fa fa-phone" aria-hidden="true"></i>{{onlineDriver.chofer.telCelular}}</li>
+              <li>{{onlineDriver.vehiculo.marca}}</li>
+              <li>{{onlineDriver.vehiculo.modelo}}</li>
+              <li>{{onlineDriver.vehiculo.color}}</li>
+              <li>{{onlineDriver.vehiculo.placas}}</li>
+            </ul>
+          </li>
+        </div>
+        <div class="list-group" *ngSwitchCase="2">
+          <li *ngFor="let ontripDriver of ontripDrivers" class="list-group-item list-group-item-default">
+            <i class="fa fa-taxi" aria-hidden="true"></i> {{ontripDriver.chofer.nombre}} {{ontripDriver.chofer.apellidos}}
+            <ul>
+              <li><i class="fa fa-phone" aria-hidden="true"></i>{{ontripDriver.chofer.telCelular}}</li>
+              <li>{{ontripDriver.vehiculo.marca}}</li>
+              <li>{{ontripDriver.vehiculo.modelo}}</li>
+              <li>{{ontripDriver.vehiculo.color}}</li>
+              <li>{{ontripDriver.vehiculo.placas}}</li>
+            </ul>
+          </li>
+        </div>
+        <div class="list-group" *ngSwitchCase="0">
+          <li *ngFor="let offlineDriver of offlineDrivers" class="list-group-item list-group-item-default">
+            <i class="fa fa-taxi" aria-hidden="true"></i> {{offlineDriver.chofer.nombre}} {{offlineDriver.chofer.apellidos}}
+            <ul>
+              <li><i class="fa fa-phone" aria-hidden="true"></i>{{offlineDriver.chofer.telCelular}}</li>
+              <li>{{offlineDriver.vehiculo.marca}}</li>
+              <li>{{offlineDriver.vehiculo.modelo}}</li>
+              <li>{{offlineDriver.vehiculo.color}}</li>
+              <li>{{offlineDriver.vehiculo.placas}}</li>
+            </ul>
+          </li>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default btn-lg" data-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal confirmacion auto llenar -->
+<div class="modal fade" id="modalAutoLLenar" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <div class="row">
+          <div class="col-lg-3">
+            <i class="fa fa-exclamation-circle fa-5x" aria-hidden="true"></i>
+          </div>
+          <div class="col-xl-1">
+            <h3 class="modal-title">¿Deseas auto llenar los campos con los datos del viaje pendiente?</h3>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="addFromNotification()">Sí</button>
+      </div>
+    </div>
+  </div>
+</div>

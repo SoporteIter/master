@@ -1,0 +1,495 @@
+<ul class="nav nav-tabs">
+  <li id="tab" role="presentation" style="cursor: pointer" [ngClass]="{active: selectedActivo === 'Chofer'}" (click)="onSelect('Chofer')"><a>Choferes</a></li>
+  <!-- <li id="tab" role="presentation" style="cursor: pointer" [ngClass]="{active: selectedActivo === 'Celular'}" (click)="onSelect('Celular')"><a>Celulares</a></li> -->
+  <li id="tab" role="presentation" style="cursor: pointer" [ngClass]="{active: selectedActivo === 'Vehiculo'}" (click)="onSelect('Vehiculo')"><a>Vehículos</a></li>
+  <!-- <li id="tab" role="presentation" style="cursor: pointer" [ngClass]="{active: selectedActivo === 'GPS'}" (click)="onSelect('GPS')"><a>GPS</a></li> -->
+  <!-- <li id="tab" role="presentation" style="cursor: pointer" [ngClass]="{active: selectedActivo === 'Empresa'}" (click)="onSelect('Empresa')"><a>Empresas</a></li> -->
+  <!-- <li id="tab" role="presentation" style="cursor: pointer" [ngClass]="{active: selectedActivo === 'Operador movil'}" (click)="onSelect('OperadorMovil')"><a>Operadores moviles</a></li> -->
+  <li id="tab" role="presentation" class="dropdown">
+    <a class="dropdown-toggle" data-toggle="dropdown" role="button" style="cursor: pointer" aria-haspopup="true" aria-expanded="false"> Crear nuevo <span class="caret"></span></a>
+    <ul class="dropdown-menu">
+      <li><a style="cursor: pointer" (click)="modelForm(0, '', 'Chofer')">Chofer</a></li>
+      <!-- <li><a style="cursor: pointer" (click)="modelForm(0, '', 'Celular')">Celular</a></li> -->
+      <li><a style="cursor: pointer" (click)="modelForm(0, '', 'Vehiculo')">Vehículo</a></li>
+      <!-- <li><a style="cursor: pointer" (click)="modelForm(0, '', 'GPS')">GPS</a></li> -->
+      <!-- <li><a style="cursor: pointer" (click)="modelForm(0, '', 'Empresa')">Empresa</a></li> -->
+      <!-- <li><a style="cursor: pointer" (click)="modelForm(0, '', 'OperadorMovil')">Operador movil</a></li> -->
+    </ul>
+  </li>
+  <div style="float: right">
+    <label><b>{{selectedActivo}}: </b>{{activosRowCount}}</label>
+    <input (keyup)="onQuickFilterChanged(0, $event)" type="search" name="googlesearch" placeholder="Buscar...">
+    <button type="button" class="btn btn-primary" (click)="onSelect(selectedActivo)">Actualizar Datos</button>
+  </div>
+</ul>
+
+<ag-grid-ng2 id="activosAgGrid" style="width: 100%; height: 800px;" class="ag-blue"
+[gridOptions]="activosGridOptions"
+[columnDefs]="activosColumnDefs"
+[rowData]="activosRowData"
+
+enableColResize
+enableSorting
+enableFilter
+rowSelection="single"
+
+(modelUpdated)="onModelUpdated()"
+(rowClicked)="onRowClicked($event)"
+(rowDoubleClicked)="onRowDoubleClicked($event)">
+</ag-grid-ng2>
+
+<!-- Modal Form-->
+<div class="modal fade" id="modalForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div *ngIf="!activeForm" class="vertical-alignment-helper">
+    <div class="modal-dialog vertical-align-center">
+      <div class="loading">
+        <div class="loading-bar"></div>
+        <div class="loading-bar"></div>
+        <div class="loading-bar"></div>
+        <div class="loading-bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="activeForm" [ngSwitch]="selectedActivo" class="modal-dialog">
+
+<!-- TODO: Validar que el numero tenga 10 digitos y validar email -->
+    <!-- Driver Form -->
+    <div *ngSwitchCase="'Chofer'" class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h1 class="modal-title">Chofer</h1>
+      </div>
+      <form class="form-driver" #driverForm="ngForm" (ngSubmit)="onSave()">
+        <div class="modal-body">
+          <div class="form-group">
+            <h4 for="foto">Foto Chofer</h4>
+            <div id="imgContainer">
+              <img *ngIf="!modelDriver.file" src="../../../assets/blank-user.png" class="img-thumbnail">
+              <img *ngIf="modelDriver.file" src='{{modelDriver.file}}' class="img-thumbnail">
+            </div>
+            <input id="fileInput" type="file" class="form-control input-lg" name="foto" (change)="fileChange(input)" #input>
+            <div [hidden]="photo" class="alert alert-danger">
+              Foto obligatoria
+            </div>
+          </div>
+          <div class="form-group">
+            <h4 for="nombre">Nombre</h4>
+            <input type="text" class="form-control input-lg" required autofocus
+            [(ngModel)]="modelDriver.nombre"
+            name="nombre" #nombre="ngModel">
+            <div [hidden]="nombre.valid || nombre.pristine" class="alert alert-danger">
+              Nombre obligatorio
+            </div>
+          </div>
+          <div class="form-group">
+            <h4 for="apellidos">Apellidos</h4>
+            <input type="text" class="form-control input-lg" required
+            [(ngModel)]="modelDriver.apellidos"
+            name="apellidos" #apellidos="ngModel">
+            <div [hidden]="apellidos.valid || apellidos.pristine" class="alert alert-danger">
+              Apellidos obligatorios
+            </div>
+          </div>
+          <div class="form-group">
+            <h4 for="status">Estatus</h4>
+            <div name="status" class="btn-group btn-group-lg" role="group" aria-label="...">
+              <button type="button" class="btn btn-default" [ngClass]="{active: modelDriver.status === 1}" (click)="modelDriver.status = 1">Activo</button>
+              <button type="button" class="btn btn-default" [ngClass]="{active: modelDriver.status === 0}" (click)="modelDriver.status = 0">Inactivo</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <h4 for="ciudad">Ciudad</h4>
+            <input type="text" class="form-control input-lg" required
+            [(ngModel)]="modelDriver.ciudad"
+            name="ciudad" #ciudad="ngModel">
+            <div [hidden]="ciudad.valid || ciudad.pristine" class="alert alert-danger">
+              Ciudad obligatoria
+            </div>
+          </div>
+          <div class="form-group">
+            <h4 for="codigoPostal">Codigo Postal</h4>
+            <input type="text" class="form-control input-lg" required
+            [(ngModel)]="modelDriver.codigoPostal"
+            name="codigoPostal" #codigoPostal="ngModel">
+            <div [hidden]="codigoPostal.valid || codigoPostal.pristine" class="alert alert-danger">
+              Codigo Postal obligatorio
+            </div>
+          </div>
+          <div class="form-group">
+            <h4 for="fechaNacimiento">Fecha de Nacimiento</h4>
+            <input type="date" class="form-control input-lg" required
+            [(ngModel)]="modelDriver.fechaNacimiento"
+            name="fechaNacimiento" #fechaNacimiento="ngModel">
+            <div [hidden]="fechaNacimiento.valid || fechaNacimiento.pristine" class="alert alert-danger">
+              Fecha de Nacimiento obligatoria
+            </div>
+          </div>
+          <div class="form-group">
+            <h4 for="email">Email</h4>
+            <input type="email" class="form-control input-lg" required
+            [(ngModel)]="modelDriver.email"
+            name="email" #email="ngModel">
+            <div [hidden]="email.valid || email.pristine" class="alert alert-danger">
+              Email obligatorio
+            </div>
+          </div>
+          <div class="form-group">
+            <h4 for="direccion">Dirección</h4>
+            <textarea type="text" class="form-control" cols="40" rows="3" required
+            [(ngModel)]="modelDriver.direccion"
+            name="direccion" #direccion="ngModel"></textarea>
+            <div [hidden]="direccion.valid || direccion.pristine" class="alert alert-danger">
+              Dirección obligatoria
+            </div>
+          </div>
+          <div class="form-group">
+            <h4 for="fechaVencimientoLicencia">Fecha de Vencimiento de Licencia</h4>
+            <input type="date" class="form-control input-lg" required
+            [(ngModel)]="modelDriver.fechaVencimientoLicencia"
+            name="fechaVencimientoLicencia" #fechaVencimientoLicencia="ngModel">
+            <div [hidden]="fechaVencimientoLicencia.valid || fechaVencimientoLicencia.pristine" class="alert alert-danger">
+              Fecha de Vencimiento de Licencia obligatoria
+            </div>
+          </div>
+          <div class="form-group">
+            <h4 for="telCelular">Telefono Celular</h4>
+            <input type="text" class="form-control input-lg" maxlength="10" required
+            [(ngModel)]="modelDriver.telCelular"
+            name="telCelular" #telCelular="ngModel">
+            <div [hidden]="telCelular.valid || telCelular.pristine" class="alert alert-danger">
+              Telefono Celular obligatorio
+            </div>
+          </div>
+          <div class="form-group">
+            <h4 for="telCasa">Telefono Casa</h4>
+            <input type="text" class="form-control input-lg" maxlength="10" required
+            [(ngModel)]="modelDriver.telCasa"
+            name="telCasa" #telCasa="ngModel">
+            <div [hidden]="telCasa.valid || telCasa.pristine" class="alert alert-danger">
+              Telefono Casa obligatorio
+            </div>
+          </div>
+          <div class="form-group">
+            <h4 for="iterMercado">Iter Mercado</h4>
+            <select class="form-control input-lg" required
+            [(ngModel)]="modelDriver.iterMercado"
+            name="iterMercado" #iterMercado="ngModel">
+            <option *ngFor="let mercado of mercados" [ngValue]="mercado">{{mercado.get('nombre')}}</option>
+          </select>
+          <div [hidden]="iterMercado.valid || iterMercado.pristine" class="alert alert-danger">
+            Iter Mercado obligatorio
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button *ngIf="optionChosen == 1" type="button" class="btn btn-danger btn-lg" style="float: left" (click)="onErase()">
+          <span *ngIf="!loadingErase">Borrar Chofer</span>
+          <div *ngIf="loadingErase" class="loading">
+            <div class="loading-bar"></div>
+            <div class="loading-bar"></div>
+            <div class="loading-bar"></div>
+            <div class="loading-bar"></div>
+          </div>
+        </button>
+        <button *ngIf="optionChosen == 1" type="button" class="btn btn-primary btn-lg" style="float: left" (click)="onResetPassword()">
+          <span *ngIf="!loadingResetPass">Cambiar contraseña</span>
+          <div *ngIf="loadingResetPass" class="loading">
+            <div class="loading-bar"></div>
+            <div class="loading-bar"></div>
+            <div class="loading-bar"></div>
+            <div class="loading-bar"></div>
+          </div>
+        </button>
+        <button type="button" class="btn btn-default btn-lg" data-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-primary btn-lg" [disabled]="!driverForm.form.valid || !modelDriver.file || (modelDriver.status == undefined)">
+          <span *ngIf="!loadingSave">Guardar</span>
+          <div *ngIf="loadingSave" class="loading">
+            <div class="loading-bar"></div>
+            <div class="loading-bar"></div>
+            <div class="loading-bar"></div>
+            <div class="loading-bar"></div>
+          </div>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Vehicle Form -->
+  <div *ngSwitchCase="'Vehiculo'" class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <h1 class="modal-title">Vehículo</h1>
+    </div>
+    <form class="form-vehicle" #vehicleForm="ngForm" (ngSubmit)="onSave()">
+      <div class="modal-body">
+        <div class="form-group">
+          <h4 for="foto">Foto Vehículo</h4>
+          <div id="imgContainer">
+            <img *ngIf="!modelVehicle.file" src="../../../assets/blank-vehicle.png" class="img-thumbnail">
+            <img *ngIf="modelVehicle.file" src='{{modelVehicle.file}}' class="img-thumbnail">
+          </div>
+          <input id="fileInput" type="file" class="form-control input-lg" name="foto" (change)="fileChange(input)" #input>
+          <!-- <div [hidden]="photo" class="alert alert-danger">
+          Foto obligatoria
+        </div> -->
+      </div>
+      <div class="form-group">
+        <h4 for="marca">Marca</h4>
+        <input type="text" class="form-control input-lg" required autofocus
+        [(ngModel)]="modelVehicle.marca"
+        name="marca" #marca="ngModel">
+        <div [hidden]="marca.valid || marca.pristine" class="alert alert-danger">
+          Marca obligatoria
+        </div>
+      </div>
+      <div class="form-group">
+        <h4 for="modelo">Modelo</h4>
+        <input type="text" class="form-control input-lg" required
+        [(ngModel)]="modelVehicle.modelo"
+        name="modelo" #modelo="ngModel">
+        <div [hidden]="modelo.valid || modelo.pristine" class="alert alert-danger">
+          Modelo obligatorio
+        </div>
+      </div>
+      <div class="form-group">
+        <h4 for="status">Estatus</h4>
+        <div name="status" class="btn-group btn-group-lg" role="group" aria-label="...">
+          <button type="button" class="btn btn-default" [ngClass]="{active: modelVehicle.status === 1}" (click)="modelVehicle.status = 1">Activo</button>
+          <button type="button" class="btn btn-default" [ngClass]="{active: modelVehicle.status === 0}" (click)="modelVehicle.status = 0">Inactivo</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <h4 for="placa">Numero de placas</h4>
+        <input type="text" class="form-control input-lg" required
+        [(ngModel)]="modelVehicle.placa"
+        name="placa" #placa="ngModel">
+        <div [hidden]="placa.valid || placa.pristine" class="alert alert-danger">
+          Numero de placas obligatorio
+        </div>
+      </div>
+      <div class="form-group">
+        <h4 for="color">Color</h4>
+        <input type="text" class="form-control input-lg" required
+        [(ngModel)]="modelVehicle.color"
+        name="color" #color="ngModel">
+        <div [hidden]="color.valid || color.pristine" class="alert alert-danger">
+          Color obligatorio
+        </div>
+      </div>
+      <div class="form-group">
+        <h4 for="tipo">Tipo</h4>
+        <input type="text" class="form-control input-lg" required
+        [(ngModel)]="modelVehicle.tipo"
+        name="tipo" #tipo="ngModel">
+        <div [hidden]="tipo.valid || tipo.pristine" class="alert alert-danger">
+          Tipo obligatorio
+        </div>
+      </div>
+      <div class="form-group">
+        <h4 for="numeroLugares">Número de lugares</h4>
+        <input type="text" class="form-control input-lg" required
+        [(ngModel)]="modelVehicle.numeroLugares"
+        name="numeroLugares" #numeroLugares="ngModel">
+        <div [hidden]="numeroLugares.valid || numeroLugares.pristine" class="alert alert-danger">
+          Número de lugares obligatorio
+        </div>
+      </div>
+      <div class="form-group">
+        <h4 for="numeroSerie">Número de serie</h4>
+        <input type="text" class="form-control input-lg" required
+        [(ngModel)]="modelVehicle.numeroSerie"
+        name="numeroSerie" #numeroSerie="ngModel">
+        <div [hidden]="numeroSerie.valid || numeroSerie.pristine" class="alert alert-danger">
+          Número de serie obligatorio
+        </div>
+      </div>
+      <div class="form-group">
+        <h4 for="tipoServicio">Tipo de servicio</h4>
+        <select class="form-control input-lg" required
+        [(ngModel)]="modelVehicle.tipoServicio"
+        name="tipoServicio" #tipoServicio="ngModel">
+        <option *ngFor="let servicio of servicios" [ngValue]="servicio">{{servicio.get('nombre')}}</option>
+      </select>
+      <div [hidden]="tipoServicio.valid || tipoServicio.pristine" class="alert alert-danger">
+        Tipo de servicio obligatorio
+      </div>
+    </div>
+    <div class="form-group">
+      <h4 for="flota">Flota</h4>
+      <input type="text" class="form-control input-lg" required
+      [(ngModel)]="modelVehicle.flota"
+      name="flota" #flota="ngModel">
+      <div [hidden]="flota.valid || flota.pristine" class="alert alert-danger">
+        Flota obligatorio
+      </div>
+    </div>
+    <div class="form-group">
+      <h4 for="licencia">Licencia</h4>
+      <input type="text" class="form-control input-lg" required
+      [(ngModel)]="modelVehicle.licencia"
+      name="licencia" #licencia="ngModel">
+      <div [hidden]="licencia.valid || licencia.pristine" class="alert alert-danger">
+        Licencia obligatoria
+      </div>
+    </div>
+    <div class="form-group">
+      <h4 for="idGPS">Id GPS</h4>
+      <input type="text" class="form-control input-lg" required
+      [(ngModel)]="modelVehicle.idGPS"
+      name="idGPS" #idGPS="ngModel">
+      <div [hidden]="idGPS.valid || idGPS.pristine" class="alert alert-danger">
+        Id GPS obligatorio
+      </div>
+    </div>
+    <div class="form-group">
+      <h4 for="fechaRegistro">Fecha de registro</h4>
+      <input type="date" class="form-control input-lg" required
+      [(ngModel)]="modelVehicle.fechaRegistro"
+      name="fechaRegistro" #fechaRegistro="ngModel">
+      <div [hidden]="fechaRegistro.valid || fechaRegistro.pristine" class="alert alert-danger">
+        Fecha de registro obligatoria
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button *ngIf="optionChosen == 1" type="button" class="btn btn-danger btn-lg" style="float: left" (click)="onErase()">
+      <span *ngIf="!loadingErase">Borrar Vehículo</span>
+      <div *ngIf="loadingErase" class="loading">
+        <div class="loading-bar"></div>
+        <div class="loading-bar"></div>
+        <div class="loading-bar"></div>
+        <div class="loading-bar"></div>
+      </div>
+    </button>
+    <button type="button" class="btn btn-default btn-lg" data-dismiss="modal">Cancelar</button>
+    <button type="submit" class="btn btn-primary btn-lg" [disabled]="!vehicleForm.form.valid || (modelVehicle.status == undefined)">
+      <span *ngIf="!loadingSave">Guardar</span>
+      <div *ngIf="loadingSave" class="loading">
+        <div class="loading-bar"></div>
+        <div class="loading-bar"></div>
+        <div class="loading-bar"></div>
+        <div class="loading-bar"></div>
+      </div>
+    </button>
+  </div>
+</form>
+</div>
+
+</div>
+</div>
+
+<!-- Modal Asignacion-->
+<div class="modal fade" id="modalAsignacion" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div *ngIf="!activeAsignacion" class="vertical-alignment-helper">
+    <div class="modal-dialog vertical-align-center">
+      <div class="loading">
+        <div class="loading-bar"></div>
+        <div class="loading-bar"></div>
+        <div class="loading-bar"></div>
+        <div class="loading-bar"></div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="activeAsignacion" class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h1 class="modal-title">Asignación</h1>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+
+          <div class="col-lg-6 col-md-6">
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h4 class="panel-title">Chofer</h4>
+              </div>
+              <div class="panel-body">
+                <div id="imgContainer">
+                  <img *ngIf="!asignacion.driverPhoto" src="../../../assets/blank-user.png" class="img-thumbnail">
+                  <img *ngIf="asignacion.driverPhoto" src="{{asignacion.driverPhoto}}" class="img-thumbnail">
+                </div>
+                <div class="separator5"></div>
+                <div class="caption">
+                  <h3>{{asignacion.driverName}}</h3>
+                  <ul>
+                    <li><strong>Mercado: </strong>{{asignacion.driverIterMercado}}</li>
+                    <li><strong>Celular: </strong>{{asignacion.driverCellPhone}}</li>
+                    <li><strong>Calificación: </strong>{{asignacion.driverRatingAvg}}</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-6 col-md-6">
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h4 class="panel-title">Vehículo</h4>
+              </div>
+              <div class="panel-body">
+                <div id="imgContainer">
+                  <img *ngIf="!asignacion.vehiclePhoto" src="../../../assets/blank-vehicle.png" class="img-thumbnail">
+                  <img *ngIf="asignacion.vehiclePhoto" src="{{asignacion.vehiclePhoto}}" class="img-thumbnail">
+                </div>
+                <div class="separator5"></div>
+                <div class="caption">
+                  <div *ngIf="!vehicleAssigned" class="alert alert-warning">Este chofer no tiene asignado un vehículo.</div>
+                  <h3 *ngIf="vehicleAssigned">{{asignacion.vehicleModel}}</h3>
+                  <ul *ngIf="vehicleAssigned">
+                    <li><strong>Color: </strong>{{asignacion.vehicleColor}}</li>
+                    <li><strong>Placas: </strong>{{asignacion.vehiclePlates}}</li>
+                    <li><strong>Tipo de servício: </strong>{{asignacion.vehicleServiceType}}</li>
+                    <li><strong>Compañia: </strong>{{asignacion.vehicleCompany}}</li>
+                  </ul>
+                  <button type="button" class="btn btn-primary btn-lg btn-block" (click)="createAsignacionGridData()">
+                    <span *ngIf="!vehicleAssigned">Asignar vehículo</span>
+                    <span *ngIf="vehicleAssigned">Cambiar vehículo asignado</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div *ngIf="activeAssign" clas="container">
+          <div>
+            <button *ngIf="objectSelected" type="button" class="btn btn-success btn-lg" (click)="assign()">
+              <span *ngIf="!loadingSave">Asignar vehículo seleccionado</span>
+              <div *ngIf="loadingSave" class="loading">
+                <div class="loading-bar"></div>
+                <div class="loading-bar"></div>
+                <div class="loading-bar"></div>
+                <div class="loading-bar"></div>
+              </div>
+            </button>
+            <div style="float: right;">
+              <label><b>Vehículo: </b>{{asignacionRowCount}}</label>
+              <input style="box-shadow: 0px 0px" (keyup)="onQuickFilterChanged(1, $event)" type="search" name="googlesearch" placeholder="Buscar...">
+              <button type="button" class="btn btn-primary" (click)="createAsignacionGridData()">Actualizar Datos</button>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+          <div class="separator10"></div>
+          <ag-grid-ng2 id="asignacionAgGrid" style="width: 100%; height: 300px;" class="ag-blue"
+          [gridOptions]="asignacionGridOptions"
+          [columnDefs]="asignacionColumnDefs"
+          [rowData]="asignacionRowData"
+
+          enableColResize
+          enableSorting
+          enableFilter
+          rowSelection="single"
+
+          (modelUpdated)="onModelUpdated()"
+          (rowClicked)="onRowClicked($event)">
+        </ag-grid-ng2>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default btn-lg" data-dismiss="modal">Cerrar</button>
+    </div>
+  </div>
+</div>
+</div>
